@@ -10,6 +10,7 @@ A very simple, single-page web application designed for the user's girlfriend to
 - **Security**: The API key is hardcoded into the client-side JavaScript. (User explicitly indicated this is a private app and security concerns around the key exposure are disregarded).
 
 ## 3. User Interface (UI)
+- **Mobile-First Design (iOS/iPadOS Target)**: The entire interface will be strictly optimized for Safari on iPhone and iPad. This means large touch-friendly tap targets, readable typography without zooming, viewport meta tags to prevent accidental scaling, and an interface that avoids horizontal scrolling.
 - **Visual Style**: "Playful & Card-based" (Giocoso a schede). Central card layout with soft, rounded edges, and pastel colors.
 - **Components**:
   - A friendly file input area labeled "Carica l'audio ❤️".
