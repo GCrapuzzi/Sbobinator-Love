@@ -278,8 +278,8 @@
 
             } catch (error) {
                 console.error("Transcription error:", error);
-                statusText.textContent = "Ops, c'è stato un piccolo intoppo tecnico (forse il formato non è supportato)... riproviamo? 🥺";
-                setTimeout(() => resetUI(), 4000); // return to upload after 4s
+                statusText.textContent = "Ops, c'è stato un piccolo intoppo tecnico... riproviamo? 🥺\n(" + (error.message || error) + ")";
+                setTimeout(() => resetUI(), 6000); // return to upload after 4s
             }
         }
 

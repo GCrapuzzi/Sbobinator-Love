@@ -27,6 +27,8 @@ class handler(BaseHTTPRequestHandler):
             config.max_alternatives = 1
             config.enable_automatic_punctuation = True
 
+            print(f"[transcribe] Received {len(audio_chunk)} bytes of audio data")
+            
             response = asr_service.offline_recognize(audio_chunk, config)
             
             transcript = ""
@@ -34,6 +36,8 @@ class handler(BaseHTTPRequestHandler):
                 for result in response.results:
                     if len(result.alternatives) > 0:
                         transcript += result.alternatives[0].transcript
+            
+            print(f"[transcribe] Transcription complete: {len(transcript)} chars")
                     
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
@@ -41,7 +45,10 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"text": transcript.strip()}).encode('utf-8'))
             
         except Exception as e:
+            import traceback
+            error_details = traceback.format_exc()
+            print(f"[transcribe] ERROR: {error_details}")
             self.send_response(500)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+            self.wfile.write(json.dumps({"error": str(e), "details": error_details}).encode('utf-8'))
