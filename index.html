@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <title>Sbobinatore ❤️</title>
+    <style>
+        :root {
+            --primary-bg: #ffe4e1; /* Misty Rose pastel background */
+            --card-bg: #ffffff;
+            --text-main: #4a4a4a;
+            --accent: #ff6b81;
+            --accent-hover: #ff4757;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: #888;
+            margin: 0;
+        }
+
+        /* Hidden file input */
+        #audio-upload {
+            display: none;
+        }
+
+        /* Large Touch-friendly Button */
+        .upload-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 24px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            min-height: 56px; /* Touch friendly height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .upload-btn:active {
+            background-color: var(--accent-hover);
+            transform: scale(0.98);
+        }
+
+        /* State containers */
+        #status-container {
+            display: none;
+            font-size: 0.95rem;
+            color: var(--accent);
+            padding: 10px;
+            font-weight: 500;
+        }
+
+        #result-container {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .transcription-box {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 1rem;
+            line-height: 1.5;
+            text-align: left;
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            color: #333;
+        }
+
+        .copy-btn {
+            background-color: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            min-height: 48px;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:active {
+            background-color: var(--primary-bg);
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div>
+            <h1>Sbobinatore ❤️</h1>
+            <p class="subtitle">Trascrizioni magiche e veloci</p>
+        </div>
+
+        <label for="audio-upload" class="upload-btn" id="upload-label">
+            Carica l'audio ❤️
+        </label>
+        <input type="file" id="audio-upload" accept="audio/*,video/*" capture="microphone">
+
+        <div id="status-container"></div>
+
+        <div id="result-container">
+            <div class="transcription-box" id="transcription-text"></div>
+            <button class="copy-btn" id="copy-btn">Copia Testo</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Logic to be implemented in Task 2
+</script>
+
+</body>
+</html>
