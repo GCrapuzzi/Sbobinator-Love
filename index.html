@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <title>Sbobinatore ❤️</title>
     <style>
         :root {
-            --primary-bg: #ffe4e1; /* Misty Rose pastel background */
+            --primary-bg: #ffe4e1;
+            /* Misty Rose pastel background */
             --card-bg: #ffffff;
             --text-main: #4a4a4a;
             --accent: #ff6b81;
             --accent-hover: #ff4757;
+            --border-color: #f1f3f5;
         }
 
         body {
@@ -28,7 +31,7 @@
 
         .container {
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             padding: 20px;
             box-sizing: border-box;
         }
@@ -53,44 +56,62 @@
             font-size: 0.95rem;
             color: #888;
             margin: 0;
+            margin-bottom: 10px;
         }
 
-        /* Hidden file input */
-        #audio-upload {
-            display: none;
-        }
-
-        /* Large Touch-friendly Button */
-        .upload-btn {
-            background-color: var(--accent);
-            color: white;
-            border: none;
+        /* Drag and Drop / Input Area */
+        .upload-area {
+            border: 2px dashed #ffb6c1;
             border-radius: 16px;
-            padding: 16px 24px;
+            padding: 30px 20px;
+            background-color: #fffafb;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .upload-area:hover,
+        .upload-area.dragover {
+            background-color: #ffe4e1;
+            border-color: var(--accent);
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            margin: 0;
+        }
+
+        .upload-text {
             font-size: 1.1rem;
             font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            min-height: 56px; /* Touch friendly height */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            box-sizing: border-box;
+            color: var(--accent);
+            margin: 0;
         }
 
-        .upload-btn:active {
-            background-color: var(--accent-hover);
-            transform: scale(0.98);
+        .upload-subtext {
+            font-size: 0.85rem;
+            color: #888;
+            margin: 0;
+        }
+
+        /* Hidden file input natively */
+        #audio-upload {
+            display: none;
         }
 
         /* State containers */
         #status-container {
             display: none;
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: var(--accent);
-            padding: 10px;
+            padding: 15px;
             font-weight: 500;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
         }
 
         #result-container {
@@ -108,134 +129,179 @@
             line-height: 1.5;
             text-align: left;
             min-height: 100px;
-            max-height: 300px;
+            max-height: 350px;
             overflow-y: auto;
             white-space: pre-wrap;
             color: #333;
         }
 
-        .copy-btn {
+        .action-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
             background-color: transparent;
             color: var(--accent);
             border: 2px solid var(--accent);
             border-radius: 12px;
             padding: 12px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             min-height: 48px;
             transition: all 0.2s;
         }
 
-        .copy-btn:active {
-            background-color: var(--primary-bg);
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn:active {
             transform: scale(0.98);
+        }
+
+        .btn-primary:active {
+            background-color: var(--accent-hover);
+            border-color: var(--accent-hover);
         }
     </style>
 </head>
+
 <body>
+    <div class="container">
+        <div class="card">
+            <div>
+                <h1>Sbobinatore ❤️</h1>
+                <p class="subtitle">Trascrizioni magiche in pochi secondi</p>
+            </div>
 
-<div class="container">
-    <div class="card">
-        <div>
-            <h1>Sbobinatore ❤️</h1>
-            <p class="subtitle">Trascrizioni magiche e veloci</p>
-        </div>
+            <!-- Enhanced Upload Area -->
+            <div class="upload-area" id="upload-area" onclick="document.getElementById('audio-upload').click()">
+                <div class="upload-icon">📁</div>
+                <p class="upload-text">Tocca per scegliere l'audio ❤️</p>
+                <p class="upload-subtext">File supportati: audio o video</p>
+            </div>
 
-        <label for="audio-upload" class="upload-btn" id="upload-label">
-            Carica l'audio ❤️
-        </label>
-        <input type="file" id="audio-upload" accept="audio/*,video/*" capture="microphone">
+            <input type="file" id="audio-upload" accept="audio/*,video/*">
 
-        <div id="status-container"></div>
+            <!-- Loading State -->
+            <div id="status-container">
+                <div style="font-size: 2rem;">✨</div>
+                <span id="status-text">Sto sbobinando questo file per te...</span>
+            </div>
 
-        <div id="result-container">
-            <div class="transcription-box" id="transcription-text"></div>
-            <button class="copy-btn" id="copy-btn">Copia Testo</button>
+            <!-- Result State -->
+            <div id="result-container">
+                <div class="transcription-box" id="transcription-text"></div>
+                <div class="action-btns">
+                    <button class="btn btn-primary" id="copy-btn">Copia Testo</button>
+                    <button class="btn" id="reset-btn">Nuovo File</button>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    // Inserisci qui la tua chiave API NVIDIA NIM
-    const API_KEY = "INSERISCI_QUI_LA_TUA_CHIAVE_API";
+    <script>
+        const uploadArea = document.getElementById('upload-area');
+        const uploadInput = document.getElementById('audio-upload');
+        const statusContainer = document.getElementById('status-container');
+        const statusText = document.getElementById('status-text');
+        const resultContainer = document.getElementById('result-container');
+        const transcriptionText = document.getElementById('transcription-text');
+        const copyBtn = document.getElementById('copy-btn');
+        const resetBtn = document.getElementById('reset-btn');
 
-    const uploadInput = document.getElementById('audio-upload');
-    const uploadLabel = document.getElementById('upload-label');
-    const statusContainer = document.getElementById('status-container');
-    const resultContainer = document.getElementById('result-container');
-    const transcriptionText = document.getElementById('transcription-text');
-    const copyBtn = document.getElementById('copy-btn');
-
-    uploadInput.addEventListener('change', async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        // Reset UI
-        resultContainer.style.display = 'none';
-        transcriptionText.textContent = '';
-        
-        // Show loading state
-        uploadLabel.style.display = 'none';
-        statusContainer.style.display = 'block';
-        statusContainer.textContent = 'Sto sbobinando questo file per te... ✨';
-
-        try {
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("model", "openai/whisper-large-v3");
-            formData.append("language", "it"); 
-
-            const response = await fetch("https://ai.api.nvidia.com/v1/audio/transcriptions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "Accept": "application/json"
-                },
-                body: formData
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                console.error("API Error Response:", errorData);
-                throw new Error(`API error: ${response.status}`);
-            }
-
-            const data = await response.json();
-            
-            // Show result
-            statusContainer.style.display = 'none';
-            resultContainer.style.display = 'flex';
-            transcriptionText.textContent = data.text || "Nessuna trascrizione disponibile.";
-            uploadLabel.style.display = 'flex';
-            uploadLabel.textContent = "Carica un altro audio ❤️";
-
-        } catch (error) {
-            console.error("Transcription error:", error);
-            statusContainer.textContent = "Ops, c'è stato un piccolo intoppo tecnico... riproviamo? 🥺";
-            uploadLabel.style.display = 'flex';
-        }
-        
-        // Reset file input so the same file can be selected again if needed
-        uploadInput.value = "";
-    });
-
-    copyBtn.addEventListener('click', () => {
-        const text = transcriptionText.textContent;
-        if (!text) return;
-        
-        navigator.clipboard.writeText(text).then(() => {
-            const originalText = copyBtn.textContent;
-            copyBtn.textContent = "Copiato! ❤️";
-            setTimeout(() => {
-                copyBtn.textContent = originalText;
-            }, 2000);
-        }).catch(err => {
-            console.error("Failed to copy:", err);
-            copyBtn.textContent = "Errore nella copia :(";
+        // Handling drag and drop visual cues
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
         });
-    });
-</script>
+        
+        ['dragleave', 'dragend'].forEach(type => {
+            uploadArea.addEventListener(type, () => uploadArea.classList.remove('dragover'));
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                uploadInput.files = e.dataTransfer.files;
+                processFile(e.dataTransfer.files[0]);
+            }
+        });
 
+        // Click to upload
+        uploadInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) processFile(file);
+        });
+
+        async function processFile(file) {
+            // Reset UI
+            resultContainer.style.display = 'none';
+            transcriptionText.textContent = '';
+
+            // Show loading state
+            uploadArea.style.display = 'none';
+            statusContainer.style.display = 'flex';
+            statusText.textContent = 'Sto inviando "' + file.name.substring(0, 20) + (file.name.length > 20 ? '...' : '') + '" ✨\nLa sbobinatura richiede qualche secondo.';
+
+            try {
+                // Call local Vercel API Route instead of NVIDIA directly, avoiding CORS
+                const response = await fetch("/api/transcribe", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": file.type || "application/octet-stream"
+                    },
+                    body: file
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `Errore del server: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Show result
+                statusContainer.style.display = 'none';
+                resultContainer.style.display = 'flex';
+                transcriptionText.textContent = data.text || "Nessuna trascrizione disponibile nell'audio.";
+
+            } catch (error) {
+                console.error("Transcription error:", error);
+                statusText.textContent = "Ops, c'è stato un piccolo intoppo tecnico... riproviamo? 🥺";
+                setTimeout(() => resetUI(), 4000); // return to upload after 4s
+            }
+        }
+
+        function resetUI() {
+            statusContainer.style.display = 'none';
+            resultContainer.style.display = 'none';
+            uploadArea.style.display = 'flex';
+            uploadInput.value = "";
+        }
+
+        resetBtn.addEventListener('click', resetUI);
+
+        copyBtn.addEventListener('click', () => {
+            const text = transcriptionText.textContent;
+            if (!text) return;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = "Copiato! ❤️";
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                copyBtn.textContent = "Errore nella copia :(";
+            });
+        });
+    </script>
 </body>
+
 </html>
