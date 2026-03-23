@@ -185,7 +185,7 @@
                 <p class="upload-subtext">File supportati: audio o video</p>
             </div>
 
-            <input type="file" id="audio-upload" accept="audio/*,video/*">
+            <input type="file" id="audio-upload" accept="audio/*,video/*,.m4a,.mp4,.mov,.aac">
 
             <!-- Loading State -->
             <div id="status-container">
@@ -247,16 +247,21 @@
             // Show loading state
             uploadArea.style.display = 'none';
             statusContainer.style.display = 'flex';
-            statusText.textContent = 'Sto inviando "' + file.name.substring(0, 20) + (file.name.length > 20 ? '...' : '') + '" ✨\nLa sbobinatura richiede qualche secondo.';
+            statusText.textContent = 'Sto preparando l\'audio "' + file.name.substring(0, 20) + (file.name.length > 20 ? '...' : '') + '" ✨\nQuesto passaggio richiede qualche secondo...';
 
             try {
+                // Convert audio to 16-bit Mono WAV (compatible with NVIDIA RIVA) using Browser's Web Audio API
+                const wavBlob = await convertAudioToWav(file);
+                
+                statusText.textContent = 'Sto inviando l\'audio al server... ✨\nLa sbobinatura è quasi pronta.';
+
                 // Call local Vercel API Route instead of NVIDIA directly, avoiding CORS
                 const response = await fetch("/api/transcribe", {
                     method: "POST",
                     headers: {
-                        "Content-Type": file.type || "application/octet-stream"
+                        "Content-Type": "audio/wav"
                     },
-                    body: file
+                    body: wavBlob
                 });
 
                 if (!response.ok) {
@@ -273,9 +278,65 @@
 
             } catch (error) {
                 console.error("Transcription error:", error);
-                statusText.textContent = "Ops, c'è stato un piccolo intoppo tecnico... riproviamo? 🥺";
+                statusText.textContent = "Ops, c'è stato un piccolo intoppo tecnico (forse il formato non è supportato)... riproviamo? 🥺";
                 setTimeout(() => resetUI(), 4000); // return to upload after 4s
             }
+        }
+
+        async function convertAudioToWav(file) {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const arrayBuffer = await file.arrayBuffer();
+            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            
+            const targetSampleRate = 16000;
+            const lengthInSamples = Math.ceil(audioBuffer.duration * targetSampleRate) || 1;
+            const offlineCtx = new OfflineAudioContext(1, lengthInSamples, targetSampleRate);
+            
+            const source = offlineCtx.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(offlineCtx.destination);
+            source.start();
+            
+            const renderedBuffer = await offlineCtx.startRendering();
+            
+            let numOfChan = renderedBuffer.numberOfChannels;
+            let length = renderedBuffer.length * numOfChan * 2 + 44;
+            let buffer = new ArrayBuffer(length);
+            let view = new DataView(buffer);
+            let channels = [], i, sample, offset = 0, pos = 0;
+
+            setUint32(0x46464952);                         // "RIFF"
+            setUint32(length - 8);                         // file length - 8
+            setUint32(0x45564157);                         // "WAVE"
+            setUint32(0x20746d66);                         // "fmt " chunk
+            setUint32(16);                                 // length = 16
+            setUint16(1);                                  // PCM (uncompressed)
+            setUint16(numOfChan);
+            setUint32(renderedBuffer.sampleRate);
+            setUint32(renderedBuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
+            setUint16(numOfChan * 2);                      // block-align
+            setUint16(16);                                 // 16-bit 
+
+            setUint32(0x61746164);                         // "data" - chunk
+            setUint32(length - offset - 4);                // chunk length
+
+            for(i = 0; i < renderedBuffer.numberOfChannels; i++)
+                channels.push(renderedBuffer.getChannelData(i));
+
+            while(pos < renderedBuffer.length) {
+                for(i = 0; i < numOfChan; i++) {
+                    sample = Math.max(-1, Math.min(1, channels[i][pos]));
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0;
+                    view.setInt16(offset, sample, true);
+                    offset += 2;
+                }
+                pos++;
+            }
+
+            return new Blob([buffer], {type: "audio/wav"});
+
+            function setUint16(data) { view.setUint16(offset, data, true); offset += 2; }
+            function setUint32(data) { view.setUint32(offset, data, true); offset += 4; }
         }
 
         function resetUI() {
